@@ -11,9 +11,9 @@ require_relative 'zlib-ext'
 # Character name to fetch from commu dialogues.
 WHITELISTED_CHARA = %w(結華)
 # Character ID to fetch
-TARGET_CHARA_ID = 6
+TARGET_CHARA_IDS = [7]
 # Unit ID to fetch (this may be ignored)
-TARGET_UNIT_ID  = 2
+TARGET_UNIT_IDS  = [2]
 
 # END OF ADJUSTABLE CONSTANTS
 
@@ -223,7 +223,7 @@ Dir.chdir(__dir__) do
   end
   create_if_not 'characters'
   chara_list.each do |chara_data|
-    next if chara_data['id'].to_i(10) != TARGET_CHARA_ID
+    next unless TARGET_CHARA_IDS.include? chara_data['id'].to_i(10)
     
     chara_folder = File.join('characters', sprintf("%03d", chara_data['id']))
     create_if_not chara_folder
@@ -282,7 +282,7 @@ Dir.chdir(__dir__) do
       audition
     ).each do |k|
       1.upto(3) do |i|
-        unlisted_voices << sprintf('%03d_%s_%d', TARGET_CHARA_ID, k, i)
+        unlisted_voices << sprintf('%03d_%s_%d', chara_data['id'].to_i, k, i)
       end
     end
     %w(
@@ -290,7 +290,7 @@ Dir.chdir(__dir__) do
       stamina_boost
       failure success
     ).each do |k|
-      unlisted_voices << sprintf('%03d_%s_cutin', TARGET_CHARA_ID, k)
+      unlisted_voices << sprintf('%03d_%s_cutin', chara_data['id'].to_i, k)
     end
     
     %w(start attack damage skil_select memory_appeal_success special_passive_skill).each do |k|
@@ -307,13 +307,13 @@ Dir.chdir(__dir__) do
       unlisted_voices << sprintf('concert_%s', k)
     end
     %w(s a b c d e f).each do |r|
-      unlisted_voices << sprintf('%03d_idol_rank_%s',TARGET_CHARA_ID, r)
+      unlisted_voices << sprintf('%03d_idol_rank_%s', chara_data['id'].to_i, r)
     end
     1.upto(15) do |i|
-      unlisted_voices << sprintf('%03d_fes_top_%d',TARGET_CHARA_ID, i)
+      unlisted_voices << sprintf('%03d_fes_top_%d', chara_data['id'].to_i, i)
     end
     1.upto(5) do |i|
-      unlisted_voices << sprintf('%03d_title_%d',TARGET_CHARA_ID, i)
+      unlisted_voices << sprintf('%03d_title_%d', chara_data['id'].to_i, i)
     end
     unlisted_voices.each do |voice_name|
       voice_folder = File.join(chara_folder, 'unlisted')
@@ -428,7 +428,7 @@ Dir.chdir(__dir__) do
     
     puts "(#{chara_data['id']}) checking P-cards..."
     extended_card_data['idol_data'].each do |card_data|
-      next if card_data['characterId'].to_i != TARGET_CHARA_ID
+      next unless TARGET_CHARA_IDS.include? card_data['characterId'].to_i
       %w(produceIdolEvents produceAfterEvents).each do |commu_k|
         card_data[commu_k]&.each do |card_commu|
           case commu_k
@@ -495,7 +495,7 @@ Dir.chdir(__dir__) do
     next if card_data.nil?
     next if card_data['character'].nil?
     # Comment this line to fetch all idol S-card commus.
-    next if card_data['character']['unitId']&.to_i != TARGET_UNIT_ID
+    next unless TARGET_UNIT_ID.include? card_data['character']['unitId']&.to_i
     chara_folder = File.join('characters', sprintf("%03d", card_data['characterId']))
     create_if_not chara_folder
     card_data['produceSupportIdolEvents'].each do |card_commu|
