@@ -9,7 +9,7 @@ require_relative 'zlib-ext'
 # Adjust the value of these constants to change the character specification
 
 # Character name to fetch from commu dialogues.
-WHITELISTED_CHARA = %w(咲耶)
+WHITELISTED_CHARA = %w(結華)
 # Character ID to fetch
 TARGET_CHARA_ID = 6
 # Unit ID to fetch (this may be ignored)
